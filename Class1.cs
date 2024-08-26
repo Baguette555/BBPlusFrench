@@ -38,6 +38,9 @@ namespace BBPlusFrench
             MethodInfo patchWarningScreen = AccessTools.Method(typeof(MyPatches), "StartScreen_Patch");
             harmony.Patch(originalWarningScreen, postfix: new HarmonyMethod(patchWarningScreen));
 
+            MethodInfo originalEndlessGameManager = AccessTools.Method(typeof(EndlessGameManager), "RestartLevel");
+            MethodInfo patchEndlessGameManager = AccessTools.Method(typeof(MyPatches), "EndlessGameManagerRestartLevel_Patch");
+            harmony.Patch(originalEndlessGameManager, postfix: new HarmonyMethod(patchEndlessGameManager));
 
             harmony.PatchAll();
         }
@@ -62,7 +65,7 @@ namespace BBPlusFrench
         }
         // ================================================
 
-        // ================= DETENTION UI =================
+        /* ================= DETENTION UI =================
         public static void InitializeDetentionUI_MyPatch(DetentionUi __instance, Camera cam, float time, EnvironmentController ec)
         {
             TMP_Text textComponent = __instance.gameObject.transform.GetChild(0).GetComponent<TMP_Text>();
@@ -71,25 +74,122 @@ namespace BBPlusFrench
                 textComponent.text = "Détention pour vous !\n  secondes restantes !";
             }
         }
+        // ================================================ */
+
+        // ================== ENDLESS UI ==================
+
+        public static void EndlessGameManagerRestartLevel_Patch(EndlessGameManager __instance)
+        {
+            Debug.Log("EndlessGameManagerRestartLevel_Patch applied");
+
+            TMP_Text[] allTextComponents = GameObject.FindObjectsOfType<TMP_Text>(true);
+
+            foreach (var textComponent in allTextComponents)
+            {
+                if (textComponent.text.Contains("Final Score:"))
+                {
+                    textComponent.text = "Score final : " + __instance.FoundNotebooks.ToString();
+                    Debug.Log("Text modified: " + textComponent.text);
+                }
+            }
+
+            var scoreTextField = typeof(EndlessGameManager).GetField("scoreText", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (scoreTextField != null)
+            {
+                var scoreText = scoreTextField.GetValue(__instance) as TMP_Text;
+                if (scoreText != null)
+                {
+                    Debug.Log("scoreText found, clearing text");
+                    scoreText.text = "";
+                }
+                else
+                {
+                    Debug.LogError("scoreText is null.");
+                }
+            }
+            else
+            {
+                Debug.LogError("scoreText not found!");
+            }
+
+            var endlessLevelField = typeof(EndlessGameManager).GetField("endlessLevel", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (endlessLevelField != null)
+            {
+                var endlessLevel = endlessLevelField.GetValue(__instance);
+                Debug.Log("endlessLevel found");
+
+                var congratsTextField = typeof(EndlessGameManager).GetField("congratsText", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (congratsTextField != null)
+                {
+                    var congratsText = congratsTextField.GetValue(__instance) as TMP_Text;
+                    if (congratsText != null)
+                    {
+                        Debug.Log("congratsText found, changing text");
+
+                        string rankTextValue = "";
+                        var rankTextField = typeof(EndlessGameManager).GetField("rankText", BindingFlags.NonPublic | BindingFlags.Instance);
+                        if (rankTextField != null)
+                        {
+                            var rankText = rankTextField.GetValue(__instance) as TMP_Text;
+                            if (rankText != null)
+                            {
+                                rankTextValue = rankText.text;
+                                Debug.Log("rankText found, value: " + rankTextValue);
+                            }
+                            else
+                            {
+                                Debug.LogError("rankText is null.");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("rankText field not found!");
+                        }
+
+                        congratsText.text = "Tu as établi un nouveau meilleur score !\n\nRang actuel : " + rankTextValue;
+                    }
+                    else
+                    {
+                        Debug.LogError("congratsText is null.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("congratsText field not found!");
+                }
+
+                var rankTextFieldToHide = typeof(EndlessGameManager).GetField("rankText", BindingFlags.NonPublic | BindingFlags.Instance);
+                if (rankTextFieldToHide != null)
+                {
+                    var rankTextToHide = rankTextFieldToHide.GetValue(__instance) as TMP_Text;
+                    if (rankTextToHide != null)
+                    {
+                        Debug.Log("rankText found, hiding text");
+
+                        //rankTextToHide.text = "";
+                        rankTextToHide.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        Debug.LogError("rankText is null.");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("rankText not found!");
+                }
+            }
+            else
+            {
+                Debug.LogError("endlessLevel not found!");
+            }
+        }
+
         // ================================================
 
         // ================ ELEVATOR SCREEN ===============
         public static void InitializeElevatorScreen_Patch(ElevatorScreen __instance)
         {
-            var saveButtonField = typeof(ElevatorScreen).GetField("saveButton", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (saveButtonField != null)
-            {
-                var saveButton = saveButtonField.GetValue(__instance) as GameObject;
-                if (saveButton != null)
-                {
-                    TMP_Text saveButtonText = saveButton.transform.GetChild(0).GetComponent<TMP_Text>();
-                    if (saveButtonText != null)
-                    {
-                        saveButtonText.text = "Sauv. et quitter";
-                    }
-                }
-            }
-
             var bigScreenField = typeof(ElevatorScreen).GetField("bigScreen", BindingFlags.NonPublic | BindingFlags.Instance);
             if (bigScreenField != null)
             {
@@ -143,6 +243,17 @@ namespace BBPlusFrench
                         if (pointsTMPText != null)
                         {
                             pointsTMPText.text = "YTPs Gagnés :";
+                        }
+                    }
+
+                    var totalTextField = bigScreen.GetType().GetField("totalText", BindingFlags.Public | BindingFlags.Instance);
+                    var totalText = totalTextField?.GetValue(bigScreen) as GameObject;
+                    if (totalText != null)
+                    {
+                        TMP_Text totalTMPText = totalText.GetComponent<TMP_Text>();
+                        if (totalTMPText != null)
+                        {
+                            totalTMPText.text = "YTPs Totaux :";
                         }
                     }
 
