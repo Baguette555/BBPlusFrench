@@ -14,20 +14,24 @@ namespace BBPlusFrench
     {
         public const string pluginGuid = "maxou555.bbplus.french";
         public const string pluginName = "BBP: Traduction Francaise";
-        public const string pluginVersion = "1.0.1.0";
+        public const string pluginVersion = "1.0.2.3";
 
         public void Awake()
         {
             Logger.LogInfo("=========================================================================");
             Logger.LogInfo("========== BBP: Traduction Francaise a été chargé avec succès. ==========");
-            Logger.LogInfo("==========                   Version 1.0.1.0                   ==========");
-            Logger.LogInfo("==========               Compatible pour : 0.6.0               ==========");
+            Logger.LogInfo("==========                   Version 1.0.2.3                   ==========");
+            Logger.LogInfo("==========               Compatible pour : 0.6.X               ==========");
             Logger.LogInfo("=========================================================================");
 
             Harmony harmony = new Harmony(pluginGuid);
 
-            MethodInfo original = AccessTools.Method(typeof(DetentionUi), "Initialize");
+            /* MethodInfo original = AccessTools.Method(typeof(DetentionUi), "Initialize");
             MethodInfo patch = AccessTools.Method(typeof(MyPatches), "InitializeDetentionUI_MyPatch");
+
+            MethodInfo originalReadMe = AccessTools.Method(typeof(Readme), "Readme");
+            MethodInfo patchReadMe = AccessTools.Method(typeof(MyPatches), "ReadMe_Patch");
+            harmony.Patch(originalReadMe, postfix: new HarmonyMethod(patchReadMe)); */
 
             MethodInfo originalInitialize = AccessTools.Method(typeof(ElevatorScreen), "Initialize");
             MethodInfo patchInitialize = AccessTools.Method(typeof(MyPatches), "InitializeElevatorScreen_Patch");
@@ -41,9 +45,6 @@ namespace BBPlusFrench
             MethodInfo patchEndlessGameManager = AccessTools.Method(typeof(MyPatches), "EndlessGameManagerRestartLevel_Patch");
             harmony.Patch(originalEndlessGameManager, postfix: new HarmonyMethod(patchEndlessGameManager));
 
-            MethodInfo originalReadMe = AccessTools.Method(typeof(Readme), "Readme");
-            MethodInfo patchReadMe = AccessTools.Method(typeof(MyPatches), "ReadMe_Patch");
-            harmony.Patch(originalReadMe, postfix: new HarmonyMethod(patchReadMe));
 
             harmony.PatchAll();
         }
@@ -69,7 +70,7 @@ namespace BBPlusFrench
         }
         // ================================================
 
-        // ================ README TESTING ================
+        /* ================ README TESTING ================
         public static void ReadMe_Patch(Readme __instance)
         {
             Debug.Log("ReadMe_Patch applied");
@@ -96,7 +97,7 @@ namespace BBPlusFrench
                 Debug.LogWarning("heading text not found");
             }
         }
-        // ================================================
+        // ================================================ */
 
         /* ================= DETENTION UI =================
         public static void InitializeDetentionUI_MyPatch(DetentionUi __instance, Camera cam, float time, EnvironmentController ec)
