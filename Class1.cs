@@ -7,7 +7,6 @@ using System.Collections;
 using System.Reflection;
 
 
-
 namespace BBPlusFrench
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
@@ -42,9 +41,14 @@ namespace BBPlusFrench
             MethodInfo patchEndlessGameManager = AccessTools.Method(typeof(MyPatches), "EndlessGameManagerRestartLevel_Patch");
             harmony.Patch(originalEndlessGameManager, postfix: new HarmonyMethod(patchEndlessGameManager));
 
+            MethodInfo originalReadMe = AccessTools.Method(typeof(Readme), "Readme");
+            MethodInfo patchReadMe = AccessTools.Method(typeof(MyPatches), "ReadMe_Patch");
+            harmony.Patch(originalReadMe, postfix: new HarmonyMethod(patchReadMe));
+
             harmony.PatchAll();
         }
     }
+
 
     public class MyPatches
     {
@@ -65,6 +69,35 @@ namespace BBPlusFrench
         }
         // ================================================
 
+        // ================ README TESTING ================
+        public static void ReadMe_Patch(Readme __instance)
+        {
+            Debug.Log("ReadMe_Patch applied");
+
+            var textField = typeof(Readme).GetField("text", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (textField != null)
+            {
+                Debug.Log("ReadMe text found, changing text");
+                textField.SetValue(__instance, "Test, README modifié !");
+            }
+            else
+            {
+                Debug.LogWarning("ReadMe text not found");
+            }
+
+            var headingField = typeof(Readme).GetField("heading", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (headingField != null)
+            {
+                Debug.Log("heading text found, changing text");
+                headingField.SetValue(__instance, "Test numéro 2, heading modifié !");
+            }
+            else
+            {
+                Debug.LogWarning("heading text not found");
+            }
+        }
+        // ================================================
+
         /* ================= DETENTION UI =================
         public static void InitializeDetentionUI_MyPatch(DetentionUi __instance, Camera cam, float time, EnvironmentController ec)
         {
@@ -77,7 +110,6 @@ namespace BBPlusFrench
         // ================================================ */
 
         // ================== ENDLESS UI ==================
-
         public static void EndlessGameManagerRestartLevel_Patch(EndlessGameManager __instance)
         {
             Debug.Log("EndlessGameManagerRestartLevel_Patch applied");
@@ -89,7 +121,7 @@ namespace BBPlusFrench
                 if (textComponent.text.Contains("Final Score:"))
                 {
                     textComponent.text = "Score final : " + __instance.FoundNotebooks.ToString();
-                    Debug.Log("Text modified: " + textComponent.text);
+                    Debug.Log("'Final Score' Text modified: " + textComponent.text);
                 }
             }
 
@@ -136,21 +168,12 @@ namespace BBPlusFrench
                                 rankTextValue = rankText.text;
                                 Debug.Log("rankText found, value: " + rankTextValue);
                             }
-                            else
-                            {
-                                Debug.LogError("rankText is null.");
-                            }
                         }
                         else
                         {
                             Debug.LogError("rankText field not found!");
                         }
-
                         congratsText.text = "Tu as établi un nouveau meilleur score !\n\nRang actuel : " + rankTextValue;
-                    }
-                    else
-                    {
-                        Debug.LogError("congratsText is null.");
                     }
                 }
                 else
@@ -184,7 +207,6 @@ namespace BBPlusFrench
                 Debug.LogError("endlessLevel not found!");
             }
         }
-
         // ================================================
 
         // ================ ELEVATOR SCREEN ===============
