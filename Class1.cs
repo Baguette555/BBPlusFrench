@@ -14,14 +14,14 @@ namespace BBPlusFrench
     {
         public const string pluginGuid = "maxou555.bbplus.french";
         public const string pluginName = "BBP: Traduction Francaise";
-        public const string pluginVersion = "1.0.2.3";
+        public const string pluginVersion = "1.0.3.0";
 
         public void Awake()
         {
             Logger.LogInfo("=========================================================================");
             Logger.LogInfo("========== BBP: Traduction Francaise a été chargé avec succès. ==========");
-            Logger.LogInfo("==========                   Version 1.0.2.3                   ==========");
-            Logger.LogInfo("==========               Compatible pour : 0.6.X               ==========");
+            Logger.LogInfo("==========                   Version 1.0.3.0                   ==========");
+            Logger.LogInfo("==========               Compatible pour : 0.7.1               ==========");
             Logger.LogInfo("=========================================================================");
 
             Harmony harmony = new Harmony(pluginGuid);
