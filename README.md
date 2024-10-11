@@ -6,6 +6,7 @@ From posters to soda vending machines, every asset is translated into French, wi
 ![PostersBBPfrench](https://github.com/user-attachments/assets/36cf3afe-af70-44e5-96ba-457386c4a5fa)
 
 The mod is still up to date! (Mod will be released later than official game release, because I can't have the assets before release.)
+
 ![Bus__Load_Sprite](https://github.com/user-attachments/assets/5edb5726-4c4f-47a5-898f-24b252594730)
 
 Check out the mod's gamebanana page! > [BB+ - French Translation](https://gamebanana.com/wips/77850)
